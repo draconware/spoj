@@ -1,103 +1,89 @@
-#include<bits/stdc++.h>
+#include <cstdio>
+#include <vector>
+#include <queue>
+
+#define MAXN 5000
+
 using namespace std;
 
-#define LL long long
-#define MAX 5009
+vector< int > graph[ MAXN + 1 ], graphT[ MAXN + 1 ], sorted;
+bool visited[ MAXN + 1 ];
+int comp[ MAXN + 1 ], sol[ MAXN + 1 ];
+int N, M;
 
-vector<LL> v[MAX];
-vector<LL> v1[MAX];
-LL parent[MAX];
-bool mark[MAX]={false};
-stack<LL> s;
+void init( int N ) {
+    for ( int i = 0; i <= N; ++i ) {
+        graph[ i ].clear();
+        graphT[ i ].clear();
+        visited[ i ] = false;
+    }
+	sorted.clear();
+}
 
-void dfs(LL x){
-    mark[x]=true;
-    for(LL i=0;i<v[x].size();i++){
-        if(!mark[v[x][i]]){
-            dfs(v[x][i]);
+void dfs1( int S ) {
+    visited[ S ] = true;
+    int i;
+    for ( i = 0; i < graph[ S ].size(); ++i ) {
+        if ( !visited[ graph[ S ][ i ] ] ) {
+            dfs1( graph[ S ][ i ] );
         }
     }
-    s.push(x);
+    sorted.push_back( S );
 }
 
-LL root(LL x){
-    while(x != parent[x]){
-        x = parent[parent[x]];
-    }
-    return x;
-}
-
-void unite(LL x,LL y){
-    if(x < y){
-        parent[y]=parent[x];
-    }else{
-        parent[x]=parent[y];
-    }
-}
-
-void dfs1(LL x){
-    mark[x]=true;
-    for(LL i=0;i<v1[x].size();i++){
-        if(!mark[v1[x][i]]){
-            LL x1 = root(x);
-            LL x2 = root(v1[x][i]);
-            if(x1 != x2){
-                unite(x1,x2);
-            }
-            dfs(v1[x][i]);
+void dfs2( int S, int c ) {
+    visited[ S ] = false;
+    comp[ S ] = c;
+    int i;
+    for ( i = 0; i < graphT[ S ].size(); ++i ) {
+        if ( visited[ graphT[ S ][ i ] ] ) {
+            dfs2( graphT[ S ][ i ], c );
         }
     }
 }
 
-int main(){
-    LL n,m;
-    while(1){
-        cin>>n;
-        if(n==0){break;}
-        cin>>m;
-        LL x,y;
-        for(LL i=0;i<MAX;i++){v[i].clear();v1[i].clear();}
-        for(LL i=0;i<m;i++){
-            cin>>x>>y;
-            v[x].push_back(y);
-            v1[y].push_back(x);
+int main() {
+    int i, j, u, v, compon;
+    while ( 1 ) {
+        scanf( "%d", &N );
+        if ( N == 0 ) {
+            break;
         }
-        for(LL i=0;i<MAX;i++){mark[i]=false;}
-        for(LL i=1;i<=n;i++){
-            if(!mark[i]){
-                dfs(i);
+        scanf( "%d", &M );
+        init( N );
+        for ( i = 0; i < M; ++i ) {
+            scanf( "%d%d", &u, &v );
+            graph[ u ].push_back( v );
+            graphT[ v ].push_back( u );
+        }
+        for ( i = 1; i <= N; ++i ) {
+            if ( !visited[ i ] ) {
+                dfs1( i );
             }
         }
-        for(LL i=0;i<MAX;i++){mark[i]=false;parent[i]=i;}
-        while(!s.empty()){
-            LL x = s.top();
-            s.pop();
-            if(!mark[x]){
-                dfs1(x);
+        compon = 0;
+        for ( i = sorted.size() - 1; i >= 0; --i ) {
+            if ( visited[ sorted[ i ] ] ) {
+                dfs2( sorted[ i ], compon++ );
+                sol[ compon - 1 ] = true;
             }
         }
-        for(LL i=0;i<MAX;i++){mark[i]=false;}
-        vector<LL> res;
-        int flag=0;
-        for(LL i=1;i<=n;i++){
-            if(mark[i]){continue;}
-            res.push_back(i);
-            for(LL j=0;j<v[i].size();j++){
-                if(root(i) != root(v[i][j])){
-                    res.clear();
+        for ( i = 1; i <= N; ++i ) {
+            for ( j = 0; j < graph[ i ].size(); ++j ) {
+                if ( comp[ i ] != comp[ graph[ i ][ j ] ] ) {
+                    sol[ comp[ i ] ] = false;
                     break;
-                }else{
-                    mark[v[i][j]]=true;
-                    res.push_back(v[i][j]);
-                }
-            }
-            if(res.size()>0){
-                flag=1;
-                for(LL k=0;k<res.size();k++){
-                    cout<<res[k]<<" ";
                 }
             }
         }
-        cout<<endl;
+        for ( i = 1; i <= N; ++i ) {
+            if ( sol[ comp[ i ] ] ) {
+                printf( "%d ", i );
+            }
+        }
+        printf( "\n" );
     }
+    
+    return 0;
 }
+//Contact GitHub API Training Shop Blog About

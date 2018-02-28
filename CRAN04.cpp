@@ -1,36 +1,41 @@
 #include<bits/stdc++.h>
 using namespace std;
 
-#define LL long long
-
 int main(){
-    ios_base::sync_with_stdio(false);
+	#ifndef ONLINE_JUDGE
+	freopen("input.in","r",stdin);
+	freopen("output.out","w",stdout);
+	#endif
 
-    int t;
-    cin>>t;
+	int t;
+	cin>>t;
 
-    while(t--){
-        int n,k;
-        long long amount=0;
-        cin>>n>>k;
+	while(t--){
+		int n,k;
+		cin>>n>>k;
 
-        string str;
-        cin>>str;
+		string s;
+		cin>>s;
+		int arr[n];
+		vector<int> v;
+		for(int i=0;i<n;i++){arr[i]=s[i]-'0';}
+		v.push_back(arr[0]);
+		for(int i=1;i<n;i++){
+			v.push_back(v[i-1]+arr[i]);
+		}
 
-        for(int i=0;i<n;i++){
-            int count=0;
-            for(int j=i;j<n;j++){
-                if(str[j]=='1'){
-                    count++;
-                }
-                if(count==k){
-                    amount++;
-                }else if(count>k){
-                    break;
-                }
-            }
-        }
-        cout<<amount<<endl;
-    }
-    return 0;
+		long long ans=0;
+		vector<int>::iterator it = v.begin();
+		for(int i=0;i<n;i++,it++){
+			if(arr[i]>k){continue;}
+			if(binary_search(v.begin()+i,v.end(),v[i]+(k-arr[i]))){
+				int x = lower_bound(v.begin()+i,v.end(),v[i]+(k-arr[i])) - (v.begin() + i);
+				int y = upper_bound(v.begin()+i,v.end(),v[i]+(k-arr[i])) - (v.begin() + i);
+				//cout<<i<<" "<<x<<" "<<y<<endl;
+				ans = ans + (long long)(y-x);
+			}
+		}
+		cout<<ans<<endl;
+	}
+	return 0;
 }

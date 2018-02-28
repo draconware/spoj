@@ -1,19 +1,18 @@
 #include<bits/stdc++.h>
 using namespace std;
 
-#define LL long long
-
-LL gcd(LL a,LL b){
-    while(a){
-        LL temp=a;
-        a=(b-(b/a)*a);
-        b=temp;
-    }
-    return b;
-}
-
-
 int main(){
-    LL ans=gcd(24,16);
-    cout<<ans;
+	#ifndef ONLINE_JUDGE
+	freopen("input.in","r",stdin);
+	freopen("output.out","w",stdout);
+	#endif
+
+	map<int,int> m;
+	for(int i=1;i<=10;i++){
+		m.insert(i);
+	}
+	for(int i=0;i<n;i++){
+		cout<<m[i]<<" ";
+	}
+	cout<<endl;
 }

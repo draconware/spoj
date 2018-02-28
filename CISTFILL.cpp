@@ -1,55 +1,59 @@
 #include<bits/stdc++.h>
 using namespace std;
 
-#define LL long long
+int n;
+vector<pair<pair<long double,long double>,pair<long double,long double> > > v;
+long double low,high;
+long double V;
 
-struct cisterns{
-    int b,h,w,d,v;
-};
-
-bool comp(const cisterns &x,const cisterns &y){
-    return (x.b < y.b);
+void f(){
+	while(high-low > 1e-8){
+		long double m = (low+high)/2.0;
+		long double volume=0;
+		for(int i=0;i<n;i++){
+			if(m>v[i].first.first){
+				if(m>=(v[i].first.first + v[i].first.second)){
+					volume += ((v[i].first.second) * (v[i].second.first) * (v[i].second.second));
+				}else{
+					volume += ((m - v[i].first.first) * (v[i].second.first) * (v[i].second.second));
+				}
+			}
+		}
+		if(volume<V){low=m;}
+		else{high=m;}
+	}
+	printf("%.2f\n",low);
 }
 
-bool comp(const cisterns &x,const cisterns &y){
-    return (x.h < y.h);
-}
 int main(){
-    ios_base::sync_with_stdio(false);
+	#ifndef ONLINE_JUDGE
+	freopen("input.in","r",stdin);
+	freopen("output.out","w",stdout);
+	#endif
 
-    int t;
-    cin>>t;
+	int t;
+	cin>>t;
 
-    vector<struct cisterns> v,m;
+	while(t--){
+		v.clear();
+		cin>>n;
 
-    while(t--){
-        struct cisterns temp;
-        vector<struct cisterns>::iterator it;
-        int n,given_volume;
-        cin>>n;
+		low = 100000000,high = -100000000;
+		long double TV=0;
+		for(int i=0;i<n;i++){
+			long double a,b,c,d;
+			cin>>a>>b>>c>>d;
 
-        for(int i=0;i<n;i++){
-            cin>> temp.b >> temp.h >> temp.w >> temp.d ;
-            temp.v=(temp.h)*(temp.w)*(temp.d);
-            v.push_back(temp);
-        }
-        m=v;
-
-        sort(v.begin(),v.end(),comp);
-        sort(m.begin(),m.end(),comp2);
-
-        LL volume=0;
-        for(it=v.begin();it!=v.end();it++){
-            volume += *it.v;
-        }
-        cin>>given_volume;
-        if(volume < given_volume){
-            cout<<"OVERFLOW"<<endl;
-        }else if(volume==given_volume){
-            cout<< max( (v[n-1].b + v[n-1].h ),( m[n-1].b + m[n-1].h ))<<endl;
-        }else{
-
-        }
-    }
-    return 0;
+			v.push_back(make_pair(make_pair(a,b),make_pair(c,d)));
+			if(low>(a+b)){low=a+b;}
+			if(high<(a+b)){high=a+b;}
+			TV += (b*c*d);
+		}
+		cin>>V;
+		//cout<<TV<<" "<<V<<endl;
+		if(TV < V){cout<<"OVERFLOW"<<endl;}
+		else{
+			f();
+		}
+	}
 }
